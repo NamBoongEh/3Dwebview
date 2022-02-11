@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A simple example</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <style>
+        .custom-hotspot {
+            width: 10%;
+            height: 10%;
+            background: powderblue;
+        }
+
+        div.custom-tooltip span {
+            visibility: hidden;
+            position: absolute;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #000;
+            text-align: center;
+            max-width: 200px;
+            padding: 10%;
+            margin-left: -220px;
+            cursor: default;
+        }
+
+        div.custom-tooltip:hover span {
+            visibility: visible;
+        }
+
+        div.custom-tooltip:hover span:after {
+            content: '';
+            /* 말풍선에 화살표 부분 이게 없으면 화살표 사라짐 */
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-width: 10px;
+            border-style: solid;
+            border-color: palevioletred transparent transparent transparent;
+            bottom: -20px;
+            left: -10px;
+            margin: 0 50%;
+        }
+
+        #panorama {
+            width: 100%;
+            height: 50%;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container_id {
+            position: relative;
+            width: 30%;
+            height: 30%;
+        }
+    </style>
+
+    <script src="b4w.min.js"></script>
+    <script>
+
+        var m_app = b4w.require("app");
+        var m_data = b4w.require("data");
+
+        m_app.init({
+            canvas_container_id: "container_id",
+            callback: load_cb
+        })
+
+        function load_cb() {
+            m_data.load("untitled.json", loaded_cb);
+        }
+
+        function loaded_cb() {
+            m_app.enable_camera_controls();
+        }
+
+    </script>
+</head>
+
+<body>
+    <div id="panorama"></div>
+    <script>
+        pannellum.viewer('panorama', {
+            "default": {
+                "firstScene": "circle",
+                "sceneFadeDuration": 3000, /*씬 전환 속도*/
+                "autoLoad": true,
+                "compass": true,
+                "autoRotate": -10,
+            },
+
+            "scenes": {
+                "circle": {
+                    "type": "equirectangular",
+                    "panorama": "test.png",
+                    "hotSpots": [
+                        {
+                            "pitch": 30.1,
+                            "yaw": -30,
+                            "cssClass": "custom-hotspot",
+                            "createTooltipFunc": hotspot,
+                            "createTooltipArgs": "가나다라마바사테스트중입니다",
+                            "URL": "https://www.naver.com"
+                        },
+                        {
+                            "pitch": 20.1,
+                            "yaw": -30,
+                            "type": "scene",
+                            "text": "move next",
+                            "sceneId": "gonext"
+                        }
+                    ]
+                },
+                "gonext": {
+                    "type": "equirectangular",
+                    "panorama": "test2.jpg",
+                    "hotSpots": [
+                        {
+                            "pitch": 10.1,
+                            "yaw": 0,
+                            "type": "scene",
+                            "text": "go back",
+                            "sceneId": "circle"
+                        }
+                    ]
+                }
+            }
+        });
+
+        function hotspot(hotSpotDiv, args) {
+            hotSpotDiv.classList.add('custom-tooltip');
+            var span = document.createElement('span');
+            span.innerHTML = args;
+            hotSpotDiv.appendChild(span);
+            span.style.width = span.scrollWidth - 20 + 'px';
+            span.style.marginLeft = -(span.scrollWidth - hotSpotDiv.offsetWidth) / 2 + 'px';
+            span.style.marginTop = -span.scrollHeight - 12 + 'px';
+        }
+
+    </script>
+
+    <div id="container_id"></div>
+    <h1>TEST</h1>
+</body>
+
+</html>
